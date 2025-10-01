@@ -1,11 +1,11 @@
 import java.util.Date;
-import java.util.Scanner;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import javax.swing.*;
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
         Case[] cases = new Case[50];
         int caseCount = 0;
@@ -17,209 +17,336 @@ public class Main {
         int lawyerCount = 0;
 
         while (true) {
-            System.out.println("\n===== Judicial Court Management System =====");
-            System.out.println("1. Register Case");
-            System.out.println("2. Add Judge");
-            System.out.println("3. Add Lawyer");
-            System.out.println("4. Assign Judge");
-            System.out.println("5. Assign Lawyer");
-            System.out.println("6. Add Evidence");
-            System.out.println("7. Schedule Hearing");
-            System.out.println("8. Record Hearing Result");
-            System.out.println("9. Generate Case Report");
-            System.out.println("10. Close Case");
-            System.out.println("11. Show Case Details");
-            System.out.println("0. Exit");
-            System.out.print("Enter choice: ");
-            int menuChoice = scanner.nextInt();
-            scanner.nextLine();
+            int menuChoice = showVerticalMenu();
 
-            if (menuChoice == 0) break;
-
+            if (menuChoice == -1 || menuChoice == 11) break;
+                
             Case selectedCase = null;
             switch (menuChoice) {
                 // register case
-                case 1:
-                    System.out.print("Enter case number: ");
-                    int num = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("Enter case title: ");
-                    String title = scanner.nextLine();
-                    selectedCase = new Case(num, title);
-                    selectedCase.registerCase();
-                    cases[caseCount++] = selectedCase;
-                    break;
-
-                // add judge
-                case 2:
-                    if (judgeCount < judges.length) {
-                        System.out.print("Enter judge ID: ");
-                        int judgeId = scanner.nextInt();
-                        scanner.nextLine();
-                        System.out.print("Enter judge name: ");
-                        String judgeName = scanner.nextLine();
-                        
-                        judges [judgeCount++] = new Judge(judgeId, judgeName);
-                        System.out.println("Judge added successfully!");
-                    } else {
-                        System.out.println("Judge list is full!");
+                case 0:
+                    String numStr = JOptionPane.showInputDialog(null, "Enter case number:", "Register Case", JOptionPane.QUESTION_MESSAGE);
+                    if (numStr == null) break;
+                    try {
+                        int num = Integer.parseInt(numStr);
+                        String title = JOptionPane.showInputDialog(null, "Enter case title:", "Case Title", JOptionPane.QUESTION_MESSAGE);
+                        if (title == null) break;
+                        selectedCase = new Case(num, title);
+                        selectedCase.registerCase();
+                        cases[caseCount++] = selectedCase;
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Invalid case number. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                     break;
-                
-                // add lawyer
-                case 3:
-                    if (lawyerCount < lawyers.length) {
-                        System.out.print("Enter lawyer ID: ");
-                        int lawyerId = scanner.nextInt();
-                        scanner.nextLine();
-                        System.out.print("Enter lawyer name: ");
-                        String lawyerName = scanner.nextLine();
-                        System.out.print("Enter role (Defense/Prosecution): ");
-                        String lawyerRole = scanner.nextLine();
+                // add judge
+                case 1:
+                    if (judgeCount < judges.length) {
+                        String judgeIdStr = JOptionPane.showInputDialog(null, "Enter judge ID: ", "Add Judge", JOptionPane.QUESTION_MESSAGE);
+                        if (judgeIdStr == null) break;
+                        try {
+                            int judgeId = Integer.parseInt(judgeIdStr);
+                            String judgeName = JOptionPane.showInputDialog(null, "Enter judge name: ", "Add Judge", JOptionPane.QUESTION_MESSAGE);
 
-                        lawyers[lawyerCount++] = new Lawyer(lawyerId, lawyerName, lawyerRole);
-                        System.out.println("Lawyer added successfully!");
+                            if (judgeName == null) break;
+                            judges [judgeCount++] = new Judge(judgeId, judgeName);
+                            JOptionPane.showMessageDialog(null, "Judge added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "Invalid ID format!", "Error", JOptionPane.ERROR_MESSAGE);   
+                        } 
+                    } else {
+                            JOptionPane.showMessageDialog(null, "Judge list is full!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    }
+                    break;
+                // add lawyer
+                case 2:
+                    if (lawyerCount < lawyers.length) {
+                        String lawyerIdStr = JOptionPane.showInputDialog(null, "Enter lawyer ID:", "Add Lawyer", JOptionPane.QUESTION_MESSAGE);
+                        if (lawyerIdStr == null) break; 
+                        try {
+                            int lawyerId = Integer.parseInt(lawyerIdStr);
+                            String lawyerName = JOptionPane.showInputDialog(null, "Enter lawyer name:", "Add Lawyer", JOptionPane.QUESTION_MESSAGE);
+                            if (lawyerName == null) break; 
+                            
+                            String[] roleOptions = {"Defense", "Prosecution"};
+                            int roleChoice = JOptionPane.showOptionDialog(
+                                null, 
+                                "Select lawyer role:", 
+                                "Lawyer role",
+                                JOptionPane.DEFAULT_OPTION, 
+                                JOptionPane.QUESTION_MESSAGE,
+                                null, 
+                                roleOptions, 
+                                roleOptions[0]
+                            );
+                            if (roleChoice == -1) break; 
+                            String lawyerRole = roleOptions[roleChoice];
+
+                            lawyers[lawyerCount++] = new Lawyer(lawyerId, lawyerName, lawyerRole);
+                            JOptionPane.showMessageDialog(null, "Lawyer added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "Invalid lawyer ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     } 
                     else {
-                        System.out.println("Lawyer list is full!");
+                        JOptionPane.showMessageDialog(null, "Lawyer list is full!", "Warning", JOptionPane.WARNING_MESSAGE);
                     }
                     break;
-
                 // assign judge
-                case 4:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 3:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase == null) break;
-                    Judge selectedJudge = pickJudge(scanner, judges, judgeCount);
+                    Judge selectedJudge = pickJudge(judges, judgeCount);
                     if (selectedJudge != null) selectedJudge.assignCase(selectedCase);
                     break;
-
                 // assign lawyer
-                case 5:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 4:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase == null) break;
-                    Lawyer selectedLawyer = pickLawyer(scanner, lawyers, lawyerCount);
+                    Lawyer selectedLawyer = pickLawyer(lawyers, lawyerCount);
                     if (selectedLawyer != null) selectedLawyer.assignToCase(selectedCase);
                     break;
-                
                 // add evidence 
-                case 6:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 5:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase == null) break;
-                    System.out.print("Enter evidence id: ");
-                    int evidenceId = scanner.nextInt(); scanner.nextLine();
-                    System.out.print("Enter description: ");
-                    String desc = scanner.nextLine();
-                    System.out.print("Enter type: ");
-                    String type = scanner.nextLine();
-                    Evidence evidence = new Evidence(evidenceId, desc, type);
-                    selectedCase.addEvidence(evidence);
-                    break;
-
-                // schedule hearing 
-                case 7:
-                    selectedCase = pickCase(scanner, cases, caseCount);
-                    if (selectedCase == null) break;
-                    System.out.print("Enter hearing id: ");
-                    int hearingId = scanner.nextInt(); scanner.nextLine();
-                    Date date = null;
-                    while (date == null) {
-                        System.out.print("Enter date (USE THIS FORMAT => (YYYY-MM-DD): ");
-                        String dateStr = scanner.nextLine();
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                            sdf.setLenient(false);
-                            date = sdf.parse(dateStr);
-                        } catch (ParseException ex) {
-                            System.out.println("Invalid date format. Try again.");
-                        }
+                    String evidenceIdStr = JOptionPane.showInputDialog(null, "Enter evidence ID:", "Add Evidence", JOptionPane.QUESTION_MESSAGE);
+                    if (evidenceIdStr == null) break;
+                    try {
+                        int evidenceId = Integer.parseInt(evidenceIdStr);
+                        String desc = JOptionPane.showInputDialog(null, "Enter evidence description:", "Add Evidence", JOptionPane.QUESTION_MESSAGE);
+                        if (desc == null) break;
+                        String type = JOptionPane.showInputDialog(null, "Enter type:", "Add Evidence", JOptionPane.QUESTION_MESSAGE);
+                        if (type == null) break;
+                        Evidence evidence = new Evidence(evidenceId, desc, type);
+                        selectedCase.addEvidence(evidence);
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Invalid evidence ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    Hearing hearing = new Hearing(hearingId, date);
-                    selectedCase.scheduleHearing(hearing);
                     break;
-
+                // schedule hearing 
+                case 6:
+                    selectedCase = pickCase(cases, caseCount);
+                    if (selectedCase == null) break;
+                    String hearingIdStr = JOptionPane.showInputDialog(null, "Enter hearing ID:", "Schedule Hearing", JOptionPane.QUESTION_MESSAGE);
+                    if (hearingIdStr == null) break;
+                    try {
+                        int hearingId = Integer.parseInt(hearingIdStr);
+                        Date date = null;
+                        while (date == null) {
+                            String dateStr = JOptionPane.showInputDialog(null, "Enter date (YYYY-MM-DD format):", "Schedule Hearing", JOptionPane.QUESTION_MESSAGE);
+                            if (dateStr == null) break;
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                sdf.setLenient(false);
+                                date = sdf.parse(dateStr);
+                            } catch (ParseException ex) {
+                                JOptionPane.showMessageDialog(null, "Invalid date format. Please use YYYY-MM-DD format.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                        if (date != null) {
+                            Hearing hearing = new Hearing(hearingId, date);
+                            selectedCase.scheduleHearing(hearing);
+                        }
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Invalid hearing ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    break;
                 // record hearing results 
-                case 8:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 7:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase == null) break;
                     if (selectedCase.getHearingCount() == 0) {
-                        System.out.println("No hearings scheduled.");
+                        JOptionPane.showMessageDialog(null, "No hearings scheduled.", "Warning", JOptionPane.WARNING_MESSAGE);
                         break;
                     }
-                    System.out.print("Enter hearing index (1-" + selectedCase.getHearingCount() + "): ");
-                    int idx = scanner.nextInt() - 1; scanner.nextLine();
-                    System.out.print("Enter result: ");
-                    String res = scanner.nextLine();
-                    selectedCase.getHearings()[idx].recordResult(res);
+                    
+                    String[] hearingOptions = new String[selectedCase.getHearingCount()];
+                    for (int i = 0; i < selectedCase.getHearingCount(); i++) {
+                        hearingOptions[i] = "Hearing " + selectedCase.getHearings()[i].getHearingId() + " - " + selectedCase.getHearings()[i].getDate();
+                    }
+                    
+                    int hearingChoice = JOptionPane.showOptionDialog(
+                        null, 
+                        "Select hearing to record result:", 
+                        "Record Hearing Result",
+                        JOptionPane.DEFAULT_OPTION, 
+                        JOptionPane.QUESTION_MESSAGE,
+                        null, 
+                        hearingOptions, 
+                        hearingOptions[0]
+                    );
+                    
+                    if (hearingChoice != -1) {
+                        String res = JOptionPane.showInputDialog(null, "Enter hearing result:", "Record Hearing Result", JOptionPane.QUESTION_MESSAGE);
+                        if (res != null) {
+                            selectedCase.getHearings()[hearingChoice].recordResult(res);
+                        }
+                    }
                     break;
-
                 // generate case reports 
-                case 9:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 8:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase != null) selectedCase.generateReport();
                     break;
-
                 // close case 
-                case 10:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 9:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase != null) selectedCase.closeCase();
                     break;
-
                 // show case details
-                case 11:
-                    selectedCase = pickCase(scanner, cases, caseCount);
+                case 10:
+                    selectedCase = pickCase(cases, caseCount);
                     if (selectedCase != null) selectedCase.printCaseDetails();
                     break;
             }
         }
-
-        scanner.close();
-        System.out.println("Exiting System...");
+        JOptionPane.showMessageDialog(null, "Thank you for using Judicial Court Management System!", "Exiting System", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private static Case pickCase(Scanner scanner, Case[] cases, int count) {
-        if (count == 0) { System.out.println("No cases available."); return null; }
-        System.out.println("Available cases:");
+    private static int showVerticalMenu() {
+        final int[] choice = {-1}; 
+        
+        JDialog dialog = new JDialog((Frame) null, "Judicial Court Management System", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLayout(new BorderLayout());
+        
+        JLabel titleLabel = new JLabel("=== Judicial Court Management System ===", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(25, 25, 15, 25));
+        dialog.add(titleLabel, BorderLayout.NORTH);
+        
+        JLabel instructionLabel = new JLabel("Click on any option below:", JLabel.CENTER);
+        instructionLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 10, 20));
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
+        
+        String[] options = {
+            "1. Register Case", 
+            "2. Add Judge", 
+            "3. Add Lawyer", 
+            "4. Assign Judge", 
+            "5. Assign Lawyer",
+            "6. Add Evidence", 
+            "7. Schedule Hearing", 
+            "8. Record Hearing Result", 
+            "9. Generate Case Report",
+            "10. Close Case", 
+            "11. Show Case Details", 
+            "12. Exit"
+        };
+        
+        for (int i = 0; i < options.length; i++) {
+            final int index = i; 
+            JButton button = new JButton(options[i]);
+            button.setMaximumSize(new Dimension(250, 60));
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setFont(new Font("Arial", Font.PLAIN, 14));
+            
+            button.addActionListener(e -> {
+                choice[0] = index;
+                dialog.dispose();
+            });
+            // button spacing
+            buttonPanel.add(button);
+            if (i < options.length - 1) {
+                buttonPanel.add(Box.createVerticalStrut(5)); 
+            }
+        }
+        
+        // instruction and buttons to center
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(instructionLabel, BorderLayout.NORTH);
+        centerPanel.add(buttonPanel, BorderLayout.CENTER);
+        dialog.add(centerPanel, BorderLayout.CENTER);
+        // center on screen
+        dialog.pack();
+        dialog.setLocationRelativeTo(null); 
+        dialog.setVisible(true);
+        
+        return choice[0];
+    }
+
+    private static Case pickCase(Case[] cases, int count) {
+        if (count == 0) { 
+            JOptionPane.showMessageDialog(null, "No cases available.", "Warning", JOptionPane.WARNING_MESSAGE); 
+            return null; 
+        }
+        
+        String[] caseOptions = new String[count];
         for (int i = 0; i < count; i++) {
-            System.out.println((i+1) + ". Case " + cases[i].getCaseNumber() + " - " + cases[i].getTitle());
+            caseOptions[i] = "Case " + cases[i].getCaseNumber() + " - " + cases[i].getTitle();
         }
-        System.out.print("Choose case: ");
-        int choice = scanner.nextInt(); scanner.nextLine();
-        if (choice <= 0 || choice > count) return null;
-        return cases[choice-1];
+        
+        int choice = JOptionPane.showOptionDialog(
+            null,
+            "Select a case:",
+            "Choose Case",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            caseOptions,
+            caseOptions[0]
+        );
+        
+        if (choice == -1) return null; 
+        return cases[choice];
     }
 
-    private static Judge pickJudge(Scanner scanner, Judge[] judges, int judgeCount) {
+    private static Judge pickJudge(Judge[] judges, int judgeCount) {
         if (judgeCount == 0) {
-            System.out.println("No judges available.");
+            JOptionPane.showMessageDialog(null, "No judges available.", "Warning", JOptionPane.WARNING_MESSAGE);
             return null;
         }
-        System.out.println("Avaiable Judges:");
+        
+        String[] judgeOptions = new String[judgeCount];
         for(int i = 0; i < judgeCount; i++) {
-            System.out.println((i+1) + ". " + judges[i].getName());
+            judgeOptions[i] = judges[i].getName();
         }
-        System.out.print("Choose judge: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        if (choice <= 0 || choice > judgeCount) return null;
-        return judges[choice-1];
+        
+        int choice = JOptionPane.showOptionDialog(
+            null,
+            "Select a judge:",
+            "Choose Judge",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            judgeOptions,
+            judgeOptions[0]
+        );
+        
+        if (choice == -1) return null;
+        return judges[choice];
     }
 
-    private static Lawyer pickLawyer(Scanner scanner, Lawyer[] lawyers, int lawyerCount) {
+    private static Lawyer pickLawyer(Lawyer[] lawyers, int lawyerCount) {
         if (lawyerCount == 0) {
-            System.out.println("No lawyers available.");
+            JOptionPane.showMessageDialog(null, "No lawyers available.", "Warning", JOptionPane.WARNING_MESSAGE);
             return null;
         }
-        System.out.println("Available Lawyers:");
+        
+        String[] lawyerOptions = new String[lawyerCount];
         for(int i = 0; i < lawyerCount; i++) {
-            System.out.println((i+1) + ". " + lawyers[i].getName() + "[" + lawyers[i].getRole() + "]");
+            lawyerOptions[i] = lawyers[i].getName() + " [" + lawyers[i].getRole() + "]";
         }
-        System.out.print("Choose lawyer: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        if (choice <= 0 || choice > lawyerCount) return null;
-        return lawyers[choice-1];
+        
+        int choice = JOptionPane.showOptionDialog(
+            null,
+            "Select a lawyer:",
+            "Choose Lawyer",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            lawyerOptions,
+            lawyerOptions[0]
+        );
+        
+        if (choice == -1) return null;
+        return lawyers[choice];
     }
 }
+
 
 class Case {
     private int caseNumber;
@@ -244,32 +371,32 @@ class Case {
     public void registerCase() {
         this.status = "Open";
         this.filedDate = new Date();
-        System.out.println("Case " + caseNumber + " registered.");
+        JOptionPane.showMessageDialog(null, "Case " + caseNumber + " registered.", "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void assignJudge(Judge judge) {
         this.judge = judge;
-        System.out.println(judge.getName() + " assigned to case " + caseNumber);
+        JOptionPane.showMessageDialog(null, judge.getName() + " assigned to case " + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void assignLawyer(Lawyer lawyer) {
         if (lawyerCount < lawyers.length) {
             lawyers[lawyerCount++] = lawyer;
-            System.out.println("Lawyer " + lawyer.getName() + " assigned to case " + caseNumber);
+            JOptionPane.showMessageDialog(null, "Lawyer " + lawyer.getName() + " assigned to case " + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     public void addEvidence(Evidence e) {
         if (evidenceCount < evidences.length) {
             evidences[evidenceCount++] = e;
-            System.out.println("Evidence added: " + e.getDescription());
+            JOptionPane.showMessageDialog(null, "Evidence added: " + e.getDescription(), "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     public void scheduleHearing(Hearing h) {
         for (int i = 0; i < hearingCount; i++) {
             if (hearings[i].getDate().equals(h.getDate())) {
-                System.out.println("Scheduling conflict! A hearing already exists on that date.");
+                JOptionPane.showMessageDialog(null, "Scheduling conflict! A hearing already exists on that date.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
@@ -287,24 +414,47 @@ class Case {
 
     public void closeCase() {
         this.status = "Closed";
-        System.out.println("Case " + caseNumber + " closed.");
+        JOptionPane.showMessageDialog(null, "Case " + caseNumber + " closed.", "Case Closed", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void printCaseDetails() {
-        System.out.println("\n===== Case Details =====");
-        System.out.println("Case " + caseNumber + ": " + title);
-        System.out.println("Status: " + status);
-        System.out.println("Filed: " + filedDate);
-        System.out.println("Judge: " + (judge!=null ? judge.getName() : "Not assigned"));
-        System.out.println("Lawyers:");
-        for (int i=0;i<lawyerCount;i++) System.out.println(" - " + lawyers[i].getName());
-        System.out.println("Evidence:");
-        for (int i=0;i<evidenceCount;i++) System.out.println(" - " + evidences[i].getDescription());
-        System.out.println("Hearings:");
-        for (int i=0;i<hearingCount;i++) {
-            System.out.println(" - Hearing " + hearings[i].getHearingId() + " on " + hearings[i].getDate() +
-                               " Result: " + hearings[i].getResult());
+        StringBuilder details = new StringBuilder();
+        details.append("===== Case Details =====\n\n");
+        details.append("Case ").append(caseNumber).append(": ").append(title).append("\n");
+        details.append("Status: ").append(status).append("\n");
+        details.append("Filed: ").append(filedDate).append("\n");
+        details.append("Judge: ").append(judge != null ? judge.getName() : "Not assigned").append("\n\n");
+        
+        details.append("Lawyers:\n");
+        if (lawyerCount == 0) {
+            details.append("  - No lawyers assigned\n");
+        } else {
+            for (int i = 0; i < lawyerCount; i++) {
+                details.append("  - ").append(lawyers[i].getName()).append(" [").append(lawyers[i].getRole()).append("]\n");
+            }
         }
+        
+        details.append("\nEvidence:\n");
+        if (evidenceCount == 0) {
+            details.append("  - No evidence added\n");
+        } else {
+            for (int i = 0; i < evidenceCount; i++) {
+                details.append("  - ").append(evidences[i].getDescription()).append("\n");
+            }
+        }
+        
+        details.append("\nHearings:\n");
+        if (hearingCount == 0) {
+            details.append("  - No hearings scheduled\n");
+        } else {
+            for (int i = 0; i < hearingCount; i++) {
+                details.append("  - Hearing ").append(hearings[i].getHearingId())
+                       .append(" on ").append(hearings[i].getDate())
+                       .append(" | Result: ").append(hearings[i].getResult()).append("\n");
+            }
+        }
+        
+        JOptionPane.showMessageDialog(null, details.toString(), "Case Details", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public int getCaseNumber() { return caseNumber; }
@@ -355,7 +505,7 @@ class Evidence {
 
     public String getDescription() { return description; }
     public String getType() { return type; }
-    public void upload() { System.out.println("Uploaded evidence: " + description); }
+    public void upload() { JOptionPane.showMessageDialog(null, "Uploaded evidence: " + description, "Evidence", JOptionPane.INFORMATION_MESSAGE); }
 }
 
 class Hearing {
@@ -369,12 +519,12 @@ class Hearing {
     }
 
     public void schedule() {
-        System.out.println("Hearing " + hearingId + " scheduled for " + date);
+        JOptionPane.showMessageDialog(null, "Hearing " + hearingId + " scheduled for " + date, "Hearing Scheduled", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void recordResult(String res) {
         this.result = res;
-        System.out.println("Result recorded for hearing " + hearingId + ": " + res);
+        JOptionPane.showMessageDialog(null, "Result recorded for hearing " + hearingId + ": " + res, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public int getHearingId() { return hearingId; }
@@ -394,6 +544,6 @@ class Report {
     }
 
     public void export() {
-        System.out.println("Exporting Report " + reportId + ": " + content);
+        JOptionPane.showMessageDialog(null, "Exporting Report " + reportId + ": " + content, "Export Report", JOptionPane.INFORMATION_MESSAGE);
     }
 }
