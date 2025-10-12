@@ -248,19 +248,16 @@ public class Main {
                 choice[0] = index;
                 dialog.dispose();
             });
-            // button spacing
             buttonPanel.add(button);
             if (i < options.length - 1) {
                 buttonPanel.add(Box.createVerticalStrut(5)); 
             }
         }
         
-        // instruction and buttons to center
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(instructionLabel, BorderLayout.NORTH);
         centerPanel.add(buttonPanel, BorderLayout.CENTER);
         dialog.add(centerPanel, BorderLayout.CENTER);
-        // center on screen
         dialog.pack();
         dialog.setLocationRelativeTo(null); 
         dialog.setVisible(true);
