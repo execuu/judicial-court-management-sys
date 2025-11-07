@@ -1,3 +1,5 @@
+import javax.swing.JOptionPane;
+
 public class Lawyer {
     private int lawyerId;
     private String name;
@@ -9,15 +11,19 @@ public class Lawyer {
         this.role = role;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
-    
-    public String getRole() { 
-        return role; 
+
+    public String getRole() {
+        return role;
     }
-    
-    public void assignToCase(Case c) { 
-        c.assignLawyer(this); 
+
+    // assign this Lawyer to a Case
+    public void assignToCase(Case c) {
+        c.assignLawyer(this);
+        String msg = "[Demo - Association] Lawyer " + name + " [" + role + "] associated with Case #" + c.getCaseNumber();
+        System.out.println(msg);
+        JOptionPane.showMessageDialog(null, msg, "Lawyer Assigned", JOptionPane.INFORMATION_MESSAGE);
     }
 }

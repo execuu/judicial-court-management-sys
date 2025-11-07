@@ -1,6 +1,7 @@
 import java.util.Date;
 import javax.swing.JOptionPane;
 
+
 public class Hearing {
     private int hearingId;
     private Date date;
@@ -13,22 +14,24 @@ public class Hearing {
 
     public void schedule() {
         JOptionPane.showMessageDialog(null, "Hearing " + hearingId + " scheduled for " + date, "Hearing Scheduled", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("[Info] Hearing " + hearingId + " scheduled on " + date);
     }
 
     public void recordResult(String res) {
         this.result = res;
         JOptionPane.showMessageDialog(null, "Result recorded for hearing " + hearingId + ": " + res, "Success", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("[Info] Hearing " + hearingId + " result recorded: " + res);
     }
 
-    public int getHearingId() { 
-        return hearingId; 
+    public int getHearingId() {
+        return hearingId;
     }
-    
-    public Date getDate() { 
-        return date; 
+
+    public Date getDate() {
+        return date;
     }
-    
-    public String getResult() { 
-        return result; 
+
+    public String getResult() {
+        return result;
     }
 }

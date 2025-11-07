@@ -11,19 +11,24 @@ public class Evidence {
         this.type = type;
     }
 
-    public int getEvidenceId() { 
-        return evidenceId; 
+    public int getEvidenceId() {
+        return evidenceId;
     }
-    
-    public String getDescription() { 
-        return description; 
+
+    public String getDescription() {
+        return description;
     }
-    
-    public String getType() { 
-        return type; 
+
+    public String getType() {
+        return type;
     }
-    
-    public void upload() { 
-        JOptionPane.showMessageDialog(null, "Uploaded evidence: " + description, "Evidence", JOptionPane.INFORMATION_MESSAGE); 
+
+    public void upload() {
+        JOptionPane.showMessageDialog(null, "Uploaded evidence: " + description, "Evidence", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("[Demo - Aggregation] Evidence (id=" + evidenceId + ") uploaded independently.");
+    }
+
+    public String toString() {
+        return "Evidence{id=" + evidenceId + ", desc='" + description + "', type='" + type + "'}";
     }
 }

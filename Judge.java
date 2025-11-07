@@ -1,3 +1,5 @@
+import javax.swing.JOptionPane;
+
 public class Judge {
     private int judgeId;
     private String name;
@@ -7,11 +9,15 @@ public class Judge {
         this.name = name;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
-    
-    public void assignCase(Case c) { 
-        c.assignJudge(this); 
+
+    // Judge assigns their self to  Case
+    public void assignCase(Case c) {
+        c.assignJudge(this); // Case records the association
+        String msg = "[Demo - Association] Judge " + name + " associated with Case #" + c.getCaseNumber();
+        System.out.println(msg);
+        JOptionPane.showMessageDialog(null, msg, "Judge Assigned", JOptionPane.INFORMATION_MESSAGE);
     }
 }

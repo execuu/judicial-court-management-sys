@@ -96,12 +96,12 @@ public class Main {
                         }
                         break;
 
-                    // assigns judge
+                    // assigns judge 
                     case 3:
                         selectedCase = pickCase(cases, caseCount);
                         if (selectedCase == null) break;
                         Judge selectedJudge = pickJudge(judges, judgeCount);
-                        if (selectedJudge != null) selectedJudge.assignCase(selectedCase);
+                        if (selectedJudge != null) selectedJudge.assignCase(selectedCase); // association here
                         break;
 
                     // assigns lawyer
@@ -109,7 +109,7 @@ public class Main {
                         selectedCase = pickCase(cases, caseCount);
                         if (selectedCase == null) break;
                         Lawyer selectedLawyer = pickLawyer(lawyers, lawyerCount);
-                        if (selectedLawyer != null) selectedLawyer.assignToCase(selectedCase);
+                        if (selectedLawyer != null) selectedLawyer.assignToCase(selectedCase); // association here
                         break;
 
                     // adds an evidence
@@ -125,7 +125,13 @@ public class Main {
                             String type = JOptionPane.showInputDialog(null, "Enter type:", "Add Evidence", JOptionPane.QUESTION_MESSAGE);
                             if (type == null) break;
                             Evidence evidence = new Evidence(evidenceId, desc, type);
+                            //  note:
+                            // evidence is created outside case and then added to case.
+                            // this shows Aggregation: evidence can exist independently of the case.
                             selectedCase.addEvidence(evidence);
+                            System.out.println("[Demo - Aggregation] Evidence object (id="
+                                    + evidence.getEvidenceId() + ") exists independently and was aggregated into Case #"
+                                    + selectedCase.getCaseNumber());
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(null, "Invalid evidence ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -194,10 +200,14 @@ public class Main {
                         }
                         break;
 
-                    // generate the case Reports
+                    // generate the case Reports (composition demonstration)
                     case 8:
                         selectedCase = pickCase(cases, caseCount);
-                        if (selectedCase != null) selectedCase.generateReport();
+                        if (selectedCase != null) {
+                            // composition: Case creates Report objects 
+                            // reports is tied on tthe owning Case
+                            selectedCase.generateReport();
+                        }
                         break;
 
                     // closes case
@@ -213,17 +223,18 @@ public class Main {
                         break;
                 }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, 
-                    "An unexpected error occurred: " + e.getMessage(), 
-                    "Unexpected Error", 
+                JOptionPane.showMessageDialog(null,
+                    "An unexpected error occurred: " + e.getMessage(),
+                    "Unexpected Error",
                     JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         }
 
         JOptionPane.showMessageDialog(null, "Thank you for using Judicial Court Management System!", "Exiting System", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // === Helper Methods ===
+    // helpers
 
     private static int showVerticalMenu() {
         final int[] choice = {-1};
