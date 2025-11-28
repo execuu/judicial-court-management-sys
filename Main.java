@@ -19,7 +19,7 @@ public class Main {
         while (true) {
             try {
                 int menuChoice = showVerticalMenu();
-                if (menuChoice == -1 || menuChoice == 11) break;
+                if (menuChoice == -1 || menuChoice == 12) break;
 
                 Case selectedCase = null;
                 switch (menuChoice) {
@@ -101,7 +101,7 @@ public class Main {
                         selectedCase = pickCase(cases, caseCount);
                         if (selectedCase == null) break;
                         Judge selectedJudge = pickJudge(judges, judgeCount);
-                        if (selectedJudge != null) selectedJudge.assignCase(selectedCase); // association here
+                        if (selectedJudge != null) selectedJudge.assignToCase(selectedCase);
                         break;
 
                     // assigns lawyer
@@ -124,14 +124,7 @@ public class Main {
                             if (desc == null) break;
                             String type = JOptionPane.showInputDialog(null, "Enter type:", "Add Evidence", JOptionPane.QUESTION_MESSAGE);
                             if (type == null) break;
-                            Evidence evidence = new Evidence(evidenceId, desc, type);
-                            //  note:
-                            // evidence is created outside case and then added to case.
-                            // this shows Aggregation: evidence can exist independently of the case.
-                            selectedCase.addEvidence(evidence);
-                            System.out.println("[Demo - Aggregation] Evidence object (id="
-                                    + evidence.getEvidenceId() + ") exists independently and was aggregated into Case #"
-                                    + selectedCase.getCaseNumber());
+                            selectedCase.addEvidence(evidenceId, desc, type);
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(null, "Invalid evidence ID. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -221,6 +214,11 @@ public class Main {
                         selectedCase = pickCase(cases, caseCount);
                         if (selectedCase != null) selectedCase.printCaseDetails();
                         break;
+
+                    case 11:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null) selectedCase.showParticipantRoles();
+                        break;
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,
@@ -258,7 +256,7 @@ public class Main {
             "1. Register Case", "2. Add Judge", "3. Add Lawyer", "4. Assign Judge",
             "5. Assign Lawyer", "6. Add Evidence", "7. Schedule Hearing",
             "8. Record Hearing Result", "9. Generate Case Report",
-            "10. Close Case", "11. Show Case Details", "12. Exit"
+            "10. Close Case", "11. Show Case Details", "12. Participant Roles", "13. Exit"
         };
 
         for (int i = 0; i < options.length; i++) {

@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
 
@@ -7,14 +8,14 @@ public class Case {
     private String title;
     private String status;
     private Date filedDate;
-    private Judge judge;                      // Association - Case is referenced to Judge
+    private Judge judge;                      
     private Lawyer[] lawyers = new Lawyer[10];
     private int lawyerCount = 0;
-    private Evidence[] evidences = new Evidence[20]; // Aggregation - Evidence objects are created outside and added to Case
+    private Evidence[] evidences = new Evidence[20];
     private int evidenceCount = 0;
     private Hearing[] hearings = new Hearing[10];
     private int hearingCount = 0;
-    private Report[] reports = new Report[10]; // Composition Reports are created inside Case and owned by it
+    private Report[] reports = new Report[10]; 
     private int reportCount = 0;
 
     public Case(int caseNumber, String title) {
@@ -49,7 +50,6 @@ public class Case {
     }
 
     
-    // evidence is created outside the Case and then added to it evidence can exist independently.
     public void addEvidence(Evidence e) {
         if (evidenceCount >= evidences.length) {
             JOptionPane.showMessageDialog(null, "Cannot add more evidence.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -60,6 +60,11 @@ public class Case {
                 + "\") added to Case #" + caseNumber;
         JOptionPane.showMessageDialog(null, "Evidence added: " + e.getDescription(), "Success", JOptionPane.INFORMATION_MESSAGE);
         System.out.println("[Demo - Aggregation] " + message);
+    }
+
+    public void addEvidence(int evidenceId, String description, String type) {
+        Evidence evidence = new Evidence(evidenceId, description, type);
+        addEvidence(evidence);
     }
 
     public void scheduleHearing(Hearing h) {
@@ -77,7 +82,6 @@ public class Case {
         h.schedule();
     }
 
-    // case creates report objects inside and reports are part of the Case 
     public void generateReport() {
         if (reportCount >= reports.length) {
             JOptionPane.showMessageDialog(null, "Cannot generate more reports.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -102,14 +106,14 @@ public class Case {
         details.append("Case ").append(caseNumber).append(": ").append(title).append("\n");
         details.append("Status: ").append(status).append("\n");
         details.append("Filed: ").append(filedDate).append("\n");
-        details.append("Judge: ").append(judge != null ? judge.getName() : "Not assigned").append("\n\n");
+        details.append("Judge: ").append(judge != null ? judge.describeRole() : "Not assigned").append("\n\n");
 
         details.append("Lawyers:\n");
         if (lawyerCount == 0) {
             details.append("  - No lawyers assigned\n");
         } else {
             for (int i = 0; i < lawyerCount; i++) {
-                details.append("  - ").append(lawyers[i].getName()).append(" [").append(lawyers[i].getRole()).append("]\n");
+                details.append("  - ").append(lawyers[i].describeRole()).append("\n");
             }
         }
 
@@ -150,5 +154,31 @@ public class Case {
     public int getCaseNumber() { return caseNumber; }
     public String getTitle() { return title; }
     public int getHearingCount() { return hearingCount; }
-    public Hearing[] getHearings() { return hearings; }
+    public Hearing[] getHearings() { return Arrays.copyOf(hearings, hearingCount); }
+
+    public void showParticipantRoles() {
+        Person[] participants = collectParticipants();
+        if (participants.length == 0) {
+            JOptionPane.showMessageDialog(null, "No participants assigned yet.", "Participants", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        StringBuilder builder = new StringBuilder("=== Participant Roles ===\n");
+        for (Person person : participants) {
+            builder.append("- ").append(person.describeRole()).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, builder.toString(), "Participants", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private Person[] collectParticipants() {
+        int total = (judge != null ? 1 : 0) + lawyerCount;
+        Person[] people = new Person[total];
+        int index = 0;
+        if (judge != null) {
+            people[index++] = judge;
+        }
+        for (int i = 0; i < lawyerCount; i++) {
+            people[index++] = lawyers[i];
+        }
+        return people;
+    }
 }

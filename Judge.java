@@ -1,23 +1,20 @@
 import javax.swing.JOptionPane;
 
-public class Judge {
-    private int judgeId;
-    private String name;
-
+public class Judge extends Person implements Assignable {
     public Judge(int id, String name) {
-        this.judgeId = id;
-        this.name = name;
+        super(id, name);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    // Judge assigns their self to  Case
-    public void assignCase(Case c) {
-        c.assignJudge(this); // Case records the association
-        String msg = "[Demo - Association] Judge " + name + " associated with Case #" + c.getCaseNumber();
+    @Override
+    public void assignToCase(Case c) {
+        c.assignJudge(this);
+        String msg = "[Demo - Association] Judge " + getName() + " associated with Case #" + c.getCaseNumber();
         System.out.println(msg);
         JOptionPane.showMessageDialog(null, msg, "Judge Assigned", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public String describeRole() {
+        return "Judge " + getName();
     }
 }
