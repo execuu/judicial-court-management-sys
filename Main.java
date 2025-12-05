@@ -485,15 +485,12 @@ public class Main {
 
         JLabel titleLabel = new JLabel("=== Judicial Court Management System ===", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(25, 25, 15, 25));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 25, 10, 25));
         dialog.add(titleLabel, BorderLayout.NORTH);
 
         JLabel instructionLabel = new JLabel("Click on any option below:", JLabel.CENTER);
-        instructionLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 10, 20));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
+        instructionLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 10, 20));
+        instructionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
         String[] options = {
             "1. Register Case", "2. Add Judge", "3. Add Lawyer", "4. Assign Judge",
@@ -507,27 +504,44 @@ public class Main {
             "27. Exit"
         };
 
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10, 15));
+        
+        JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 8, 6));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         for (int i = 0; i < options.length; i++) {
             final int index = i;
             JButton button = new JButton(options[i]);
-            button.setMaximumSize(new Dimension(250, 60));
-            button.setAlignmentX(Component.CENTER_ALIGNMENT);
-            button.setFont(new Font("Arial", Font.PLAIN, 14));
+            button.setPreferredSize(new Dimension(210, 45));
+            button.setFont(new Font("Arial", Font.PLAIN, 11));
+            button.setFocusPainted(false);
+            button.setMargin(new Insets(5, 8, 5, 8));
+
+            if (index == 26) {
+                button.setBackground(new Color(220, 53, 69));
+                button.setForeground(Color.WHITE);
+            }
 
             button.addActionListener(e -> {
                 choice[0] = index;
                 dialog.dispose();
             });
             buttonPanel.add(button);
-            if (i < options.length - 1)
-                buttonPanel.add(Box.createVerticalStrut(5));
         }
+
+        JScrollPane scrollPane = new JScrollPane(buttonPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(instructionLabel, BorderLayout.NORTH);
-        centerPanel.add(buttonPanel, BorderLayout.CENTER);
-        dialog.add(centerPanel, BorderLayout.CENTER);
-        dialog.pack();
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        dialog.add(mainPanel, BorderLayout.CENTER);
+        
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
 
