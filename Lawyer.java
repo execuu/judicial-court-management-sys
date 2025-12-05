@@ -12,6 +12,12 @@ public class Lawyer extends Person implements Assignable {
         return role;
     }
 
+    public void setRole(String role) {
+        if (role != null && !role.trim().isEmpty()) {
+            this.role = role.trim();
+        }
+    }
+
     @Override
     public void assignToCase(Case c) {
         c.assignLawyer(this);

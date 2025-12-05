@@ -23,6 +23,18 @@ public class Evidence {
         return type;
     }
 
+    public void setDescription(String description) {
+        if (description != null && !description.trim().isEmpty()) {
+            this.description = description.trim();
+        }
+    }
+
+    public void setType(String type) {
+        if (type != null && !type.trim().isEmpty()) {
+            this.type = type.trim();
+        }
+    }
+
     public void upload() {
         JOptionPane.showMessageDialog(null, "Uploaded evidence: " + description, "Evidence", JOptionPane.INFORMATION_MESSAGE);
         System.out.println("[Demo - Aggregation] Evidence (id=" + evidenceId + ") uploaded independently.");

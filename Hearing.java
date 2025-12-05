@@ -34,4 +34,10 @@ public class Hearing {
     public String getResult() {
         return result;
     }
+
+    public void setDate(Date date) {
+        if (date != null) {
+            this.date = date;
+        }
+    }
 }

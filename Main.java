@@ -19,7 +19,7 @@ public class Main {
         while (true) {
             try {
                 int menuChoice = showVerticalMenu();
-                if (menuChoice == -1 || menuChoice == 12) break;
+                if (menuChoice == -1 || menuChoice == 26) break;
 
                 Case selectedCase = null;
                 switch (menuChoice) {
@@ -219,6 +219,249 @@ public class Main {
                         selectedCase = pickCase(cases, caseCount);
                         if (selectedCase != null) selectedCase.showParticipantRoles();
                         break;
+
+                    case 12:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null) {
+                            String newTitle = JOptionPane.showInputDialog(null, "Enter new case title:", "Update Case Title", JOptionPane.QUESTION_MESSAGE);
+                            if (newTitle != null) selectedCase.updateTitle(newTitle);
+                        }
+                        break;
+
+                    case 13:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null) {
+                            String[] statusOptions = {"Open", "In Progress", "Closed", "Pending"};
+                            int statusChoice = JOptionPane.showOptionDialog(null, "Select new status:", "Update Case Status",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, statusOptions, statusOptions[0]);
+                            if (statusChoice != -1) {
+                                selectedCase.updateStatus(statusOptions[statusChoice]);
+                            }
+                        }
+                        break;
+
+                    case 14:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null && selectedCase.getEvidenceCount() > 0) {
+                            Evidence[] evidences = selectedCase.getEvidences();
+                            String[] evidenceOptions = new String[evidences.length];
+                            for (int i = 0; i < evidences.length; i++) {
+                                evidenceOptions[i] = "ID: " + evidences[i].getEvidenceId() + " - " + evidences[i].getDescription();
+                            }
+                            int evidenceChoice = JOptionPane.showOptionDialog(null, "Select evidence to update:", "Update Evidence",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, evidenceOptions, evidenceOptions[0]);
+                            if (evidenceChoice != -1) {
+                                Evidence selectedEvidence = evidences[evidenceChoice];
+                                String newDesc = JOptionPane.showInputDialog(null, "Enter new description:", "Update Evidence", JOptionPane.QUESTION_MESSAGE);
+                                if (newDesc != null) {
+                                    String newType = JOptionPane.showInputDialog(null, "Enter new type:", "Update Evidence", JOptionPane.QUESTION_MESSAGE);
+                                    selectedCase.updateEvidence(selectedEvidence.getEvidenceId(), newDesc, newType);
+                                }
+                            }
+                        } else if (selectedCase != null) {
+                            JOptionPane.showMessageDialog(null, "No evidence to update.", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                        break;
+
+                    case 15:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null && selectedCase.getEvidenceCount() > 0) {
+                            Evidence[] evidences = selectedCase.getEvidences();
+                            String[] evidenceOptions = new String[evidences.length];
+                            for (int i = 0; i < evidences.length; i++) {
+                                evidenceOptions[i] = "ID: " + evidences[i].getEvidenceId() + " - " + evidences[i].getDescription();
+                            }
+                            int evidenceChoice = JOptionPane.showOptionDialog(null, "Select evidence to delete:", "Delete Evidence",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, evidenceOptions, evidenceOptions[0]);
+                            if (evidenceChoice != -1) {
+                                selectedCase.deleteEvidence(evidences[evidenceChoice].getEvidenceId());
+                            }
+                        } else if (selectedCase != null) {
+                            JOptionPane.showMessageDialog(null, "No evidence to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                        break;
+
+                    case 16:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null && selectedCase.getHearingCount() > 0) {
+                            Hearing[] hearingsToUpdate = selectedCase.getHearings();
+                            String[] hearingUpdateOptions = new String[hearingsToUpdate.length];
+                            for (int i = 0; i < hearingsToUpdate.length; i++) {
+                                hearingUpdateOptions[i] = "Hearing " + hearingsToUpdate[i].getHearingId() + " - " + hearingsToUpdate[i].getDate();
+                            }
+                            int hearingUpdateChoice = JOptionPane.showOptionDialog(null, "Select hearing to update:", "Update Hearing",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, hearingUpdateOptions, hearingUpdateOptions[0]);
+                            if (hearingUpdateChoice != -1) {
+                                Date newDate = null;
+                                while (newDate == null) {
+                                    String dateStr = JOptionPane.showInputDialog(null, "Enter new date (YYYY-MM-DD format):", "Update Hearing", JOptionPane.QUESTION_MESSAGE);
+                                    if (dateStr == null) break;
+                                    try {
+                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                        sdf.setLenient(false);
+                                        newDate = sdf.parse(dateStr);
+                                    } catch (ParseException ex) {
+                                        JOptionPane.showMessageDialog(null, "Invalid date format. Please use YYYY-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                                if (newDate != null) {
+                                    selectedCase.updateHearing(hearingsToUpdate[hearingUpdateChoice].getHearingId(), newDate);
+                                }
+                            }
+                        } else if (selectedCase != null) {
+                            JOptionPane.showMessageDialog(null, "No hearings to update.", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                        break;
+
+                    case 17:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null && selectedCase.getHearingCount() > 0) {
+                            Hearing[] hearingsToDelete = selectedCase.getHearings();
+                            String[] hearingDeleteOptions = new String[hearingsToDelete.length];
+                            for (int i = 0; i < hearingsToDelete.length; i++) {
+                                hearingDeleteOptions[i] = "Hearing " + hearingsToDelete[i].getHearingId() + " - " + hearingsToDelete[i].getDate();
+                            }
+                            int hearingDeleteChoice = JOptionPane.showOptionDialog(null, "Select hearing to delete:", "Delete Hearing",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, hearingDeleteOptions, hearingDeleteOptions[0]);
+                            if (hearingDeleteChoice != -1) {
+                                selectedCase.deleteHearing(hearingsToDelete[hearingDeleteChoice].getHearingId());
+                            }
+                        } else if (selectedCase != null) {
+                            JOptionPane.showMessageDialog(null, "No hearings to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                        break;
+
+                    case 18:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null) {
+                            selectedCase.removeJudge();
+                        }
+                        break;
+
+                    case 19:
+                        selectedCase = pickCase(cases, caseCount);
+                        if (selectedCase != null && selectedCase.getLawyerCount() > 0) {
+                            Lawyer[] caseLawyers = selectedCase.getLawyers();
+                            String[] lawyerRemoveOptions = new String[caseLawyers.length];
+                            for (int i = 0; i < caseLawyers.length; i++) {
+                                lawyerRemoveOptions[i] = caseLawyers[i].getName() + " [" + caseLawyers[i].getRole() + "]";
+                            }
+                            int lawyerRemoveChoice = JOptionPane.showOptionDialog(null, "Select lawyer to remove:", "Remove Lawyer",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, lawyerRemoveOptions, lawyerRemoveOptions[0]);
+                            if (lawyerRemoveChoice != -1) {
+                                selectedCase.removeLawyer(caseLawyers[lawyerRemoveChoice]);
+                            }
+                        } else if (selectedCase != null) {
+                            JOptionPane.showMessageDialog(null, "No lawyers to remove.", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                        break;
+
+                    case 20:
+                        if (judgeCount == 0) {
+                            JOptionPane.showMessageDialog(null, "No judges available.", "Warning", JOptionPane.WARNING_MESSAGE);
+                            break;
+                        }
+                        StringBuilder judgeList = new StringBuilder("=== Judges List ===\n\n");
+                        for (int i = 0; i < judgeCount; i++) {
+                            judgeList.append((i + 1)).append(". ").append(judges[i].getName())
+                                    .append(" (ID: ").append(judges[i].getId()).append(")\n");
+                        }
+                        JOptionPane.showMessageDialog(null, judgeList.toString(), "Judges", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+
+                    case 21:
+                        if (lawyerCount == 0) {
+                            JOptionPane.showMessageDialog(null, "No lawyers available.", "Warning", JOptionPane.WARNING_MESSAGE);
+                            break;
+                        }
+                        StringBuilder lawyerList = new StringBuilder("=== Lawyers List ===\n\n");
+                        for (int i = 0; i < lawyerCount; i++) {
+                            lawyerList.append((i + 1)).append(". ").append(lawyers[i].getName())
+                                    .append(" [").append(lawyers[i].getRole()).append("]")
+                                    .append(" (ID: ").append(lawyers[i].getId()).append(")\n");
+                        }
+                        JOptionPane.showMessageDialog(null, lawyerList.toString(), "Lawyers", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+
+                    case 22:
+                        Judge judgeToUpdate = pickJudge(judges, judgeCount);
+                        if (judgeToUpdate != null) {
+                            String newName = JOptionPane.showInputDialog(null, "Enter new name:", "Update Judge", JOptionPane.QUESTION_MESSAGE);
+                            if (newName != null && !newName.trim().isEmpty()) {
+                                judgeToUpdate.setName(newName.trim());
+                                JOptionPane.showMessageDialog(null, "Judge updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                        break;
+
+                    case 23:
+                        Judge judgeToDelete = pickJudge(judges, judgeCount);
+                        if (judgeToDelete != null) {
+                            int confirm = JOptionPane.showConfirmDialog(null,
+                                "Are you sure you want to delete " + judgeToDelete.getName() + "?",
+                                "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                            if (confirm == JOptionPane.YES_OPTION) {
+                                int index = -1;
+                                for (int i = 0; i < judgeCount; i++) {
+                                    if (judges[i] == judgeToDelete || judges[i].getId() == judgeToDelete.getId()) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    String judgeName = judges[index].getName();
+                                    for (int i = index; i < judgeCount - 1; i++) {
+                                        judges[i] = judges[i + 1];
+                                    }
+                                    judges[--judgeCount] = null;
+                                    JOptionPane.showMessageDialog(null, "Judge " + judgeName + " deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        }
+                        break;
+
+                    case 24:
+                        Lawyer lawyerToUpdate = pickLawyer(lawyers, lawyerCount);
+                        if (lawyerToUpdate != null) {
+                            String newName = JOptionPane.showInputDialog(null, "Enter new name:", "Update Lawyer", JOptionPane.QUESTION_MESSAGE);
+                            if (newName != null && !newName.trim().isEmpty()) {
+                                lawyerToUpdate.setName(newName.trim());
+                                String[] roleOptions = {"Defense", "Prosecution"};
+                                int roleChoice = JOptionPane.showOptionDialog(null, "Select new role:", "Update Lawyer Role",
+                                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, roleOptions, roleOptions[0]);
+                                if (roleChoice != -1) {
+                                    lawyerToUpdate.setRole(roleOptions[roleChoice]);
+                                    JOptionPane.showMessageDialog(null, "Lawyer updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        }
+                        break;
+
+                    case 25:
+                        Lawyer lawyerToDelete = pickLawyer(lawyers, lawyerCount);
+                        if (lawyerToDelete != null) {
+                            int confirm = JOptionPane.showConfirmDialog(null,
+                                "Are you sure you want to delete " + lawyerToDelete.getName() + "?",
+                                "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                            if (confirm == JOptionPane.YES_OPTION) {
+                                int index = -1;
+                                for (int i = 0; i < lawyerCount; i++) {
+                                    if (lawyers[i] == lawyerToDelete || lawyers[i].getId() == lawyerToDelete.getId()) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    String lawyerName = lawyers[index].getName();
+                                    for (int i = index; i < lawyerCount - 1; i++) {
+                                        lawyers[i] = lawyers[i + 1];
+                                    }
+                                    lawyers[--lawyerCount] = null;
+                                    JOptionPane.showMessageDialog(null, "Lawyer " + lawyerName + " deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        }
+                        break;
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,
@@ -256,7 +499,12 @@ public class Main {
             "1. Register Case", "2. Add Judge", "3. Add Lawyer", "4. Assign Judge",
             "5. Assign Lawyer", "6. Add Evidence", "7. Schedule Hearing",
             "8. Record Hearing Result", "9. Generate Case Report",
-            "10. Close Case", "11. Show Case Details", "12. Participant Roles", "13. Exit"
+            "10. Close Case", "11. Show Case Details", "12. Participant Roles",
+            "13. Update Case Title", "14. Update Case Status", "15. Update Evidence",
+            "16. Delete Evidence", "17. Update Hearing", "18. Delete Hearing",
+            "19. Remove Judge", "20. Remove Lawyer", "21. View Judges", "22. View Lawyers",
+            "23. Update Judge", "24. Delete Judge", "25. Update Lawyer", "26. Delete Lawyer",
+            "27. Exit"
         };
 
         for (int i = 0; i < options.length; i++) {

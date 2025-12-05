@@ -153,8 +153,171 @@ public class Case {
 
     public int getCaseNumber() { return caseNumber; }
     public String getTitle() { return title; }
+    public String getStatus() { return status; }
+    public Date getFiledDate() { return filedDate; }
     public int getHearingCount() { return hearingCount; }
     public Hearing[] getHearings() { return Arrays.copyOf(hearings, hearingCount); }
+    public int getEvidenceCount() { return evidenceCount; }
+    public Evidence[] getEvidences() { return Arrays.copyOf(evidences, evidenceCount); }
+    public int getLawyerCount() { return lawyerCount; }
+    public Lawyer[] getLawyers() { return Arrays.copyOf(lawyers, lawyerCount); }
+    public Judge getJudge() { return judge; }
+    
+    public void updateTitle(String newTitle) {
+        if (newTitle != null && !newTitle.trim().isEmpty()) {
+            this.title = newTitle.trim();
+            JOptionPane.showMessageDialog(null, "Case title updated successfully.", "Update Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Title cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void updateStatus(String newStatus) {
+        if (newStatus != null && !newStatus.trim().isEmpty()) {
+            this.status = newStatus.trim();
+            JOptionPane.showMessageDialog(null, "Case status updated to: " + newStatus, "Update Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Status cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void removeJudge() {
+        if (judge != null) {
+            String judgeName = judge.getName();
+            this.judge = null;
+            JOptionPane.showMessageDialog(null, "Judge " + judgeName + " removed from Case #" + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "No judge assigned to this case.", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    public void removeLawyer(Lawyer lawyer) {
+        if (lawyer == null) {
+            JOptionPane.showMessageDialog(null, "Invalid lawyer.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int index = -1;
+        for (int i = 0; i < lawyerCount; i++) {
+            if (lawyers[i] == lawyer || lawyers[i].getId() == lawyer.getId()) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            JOptionPane.showMessageDialog(null, "Lawyer not found in this case.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String lawyerName = lawyers[index].getName();
+        for (int i = index; i < lawyerCount - 1; i++) {
+            lawyers[i] = lawyers[i + 1];
+        }
+        lawyers[--lawyerCount] = null;
+        JOptionPane.showMessageDialog(null, "Lawyer " + lawyerName + " removed from Case #" + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public void updateEvidence(int evidenceId, String newDescription, String newType) {
+        Evidence evidence = findEvidenceById(evidenceId);
+        if (evidence == null) {
+            JOptionPane.showMessageDialog(null, "Evidence with ID " + evidenceId + " not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (newDescription != null && !newDescription.trim().isEmpty()) {
+            evidence.setDescription(newDescription.trim());
+            if (newType != null && !newType.trim().isEmpty()) {
+                evidence.setType(newType.trim());
+            }
+            JOptionPane.showMessageDialog(null, "Evidence updated successfully.", "Update Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Description cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void deleteEvidence(int evidenceId) {
+        int index = -1;
+        for (int i = 0; i < evidenceCount; i++) {
+            if (evidences[i].getEvidenceId() == evidenceId) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            JOptionPane.showMessageDialog(null, "Evidence with ID " + evidenceId + " not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String description = evidences[index].getDescription();
+        for (int i = index; i < evidenceCount - 1; i++) {
+            evidences[i] = evidences[i + 1];
+        }
+        evidences[--evidenceCount] = null;
+        JOptionPane.showMessageDialog(null, "Evidence \"" + description + "\" removed from Case #" + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private Evidence findEvidenceById(int evidenceId) {
+        for (int i = 0; i < evidenceCount; i++) {
+            if (evidences[i].getEvidenceId() == evidenceId) {
+                return evidences[i];
+            }
+        }
+        return null;
+    }
+    
+    public void updateHearing(int hearingId, Date newDate) {
+        Hearing hearing = findHearingById(hearingId);
+        if (hearing == null) {
+            JOptionPane.showMessageDialog(null, "Hearing with ID " + hearingId + " not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (newDate == null) {
+            JOptionPane.showMessageDialog(null, "Invalid date.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        for (int i = 0; i < hearingCount; i++) {
+            if (hearings[i].getHearingId() == hearingId) {
+                hearings[i] = new Hearing(hearingId, newDate);
+                JOptionPane.showMessageDialog(null, "Hearing date updated successfully.", "Update Success", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
+    }
+    
+    public void deleteHearing(int hearingId) {
+        int index = -1;
+        for (int i = 0; i < hearingCount; i++) {
+            if (hearings[i].getHearingId() == hearingId) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            JOptionPane.showMessageDialog(null, "Hearing with ID " + hearingId + " not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Date hearingDate = hearings[index].getDate();
+        for (int i = index; i < hearingCount - 1; i++) {
+            hearings[i] = hearings[i + 1];
+        }
+        hearings[--hearingCount] = null;
+        JOptionPane.showMessageDialog(null, "Hearing on " + hearingDate + " removed from Case #" + caseNumber, "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private Hearing findHearingById(int hearingId) {
+        for (int i = 0; i < hearingCount; i++) {
+            if (hearings[i].getHearingId() == hearingId) {
+                return hearings[i];
+            }
+        }
+        return null;
+    }
 
     public void showParticipantRoles() {
         Person[] participants = collectParticipants();
